@@ -4,6 +4,8 @@ from flask_restful import Api, Resource
 app = Flask(__name__)
 api = Api(app)
 
+status_codes = {200: "", 301: "Missing one or more parameters.", 302: "Attempted to divide by zero."}
+
 
 def check_posted_data(posted_data, function_name):
     if "x" not in posted_data or "y" not in posted_data:
@@ -11,6 +13,20 @@ def check_posted_data(posted_data, function_name):
     elif function_name == "divide" and int(posted_data["y"]) == 0:
         return 302  # Attempting to divide by 0
     return 200
+
+
+def perform_operation(x, y, function_name):
+    result = 0
+    if function_name == "add":
+        result = int(x) + int(y)
+    elif function_name == 'subtract':
+        result = int(x) - int(y)
+    elif function_name == 'multiply':
+        result = int(x) * int(y)
+    elif function_name == 'divide':
+        result = int(x) / int(y)
+
+    return result
 
 
 class Add(Resource):
@@ -25,22 +41,13 @@ class Add(Resource):
                 "Message": "Missing one or more parameters.",
                 "Status Code": status_code
             }
-            return jsonify(return_json)
-
-        # Valid status code received, continue
-        x = posted_data["x"]
-        y = posted_data["y"]
-
-        # Add POSTed data
-        x_int = int(x)
-        y_int = int(y)
-        sum_result = x_int + y_int
-
-        # Create message
-        return_json = {
-            'Message': sum_result,
-            'Status Code': 200
-        }
+        else:
+            # Valid status code received, continue
+            result = perform_operation(posted_data["x"], posted_data["y"], "add")
+            return_json = {
+                'Message': result,
+                'Status Code': status_code
+            }
         return jsonify(return_json)
 
 
@@ -56,22 +63,15 @@ class Subtract(Resource):
                 "Message": "Missing one or more parameters.",
                 "Status Code": status_code
             }
-            return jsonify(return_json)
+        else:
+            # Valid status code received, continue
+            result = perform_operation(posted_data["x"], posted_data["y"], "subtract")
 
-        # Valid status code received, continue
-        x = posted_data["x"]
-        y = posted_data["y"]
-
-        # Subtract POSTed data
-        x_int = int(x)
-        y_int = int(y)
-        subtract_result = x_int - y_int
-
-        # Create message
-        return_json = {
-            'Message': subtract_result,
-            'Status Code': 200
-        }
+            # Create response message
+            return_json = {
+                'Message': result,
+                'Status Code': status_code
+            }
         return jsonify(return_json)
 
 
@@ -87,22 +87,15 @@ class Multiply(Resource):
                 "Message": "Missing one or more parameters.",
                 "Status Code": status_code
             }
-            return jsonify(return_json)
+        else:
+            # Valid status code received, continue
+            result = perform_operation(posted_data["x"], posted_data["y"], "multiply")
 
-        # Valid status code received, continue
-        x = posted_data["x"]
-        y = posted_data["y"]
-
-        # Multiply POSTed data
-        x_int = int(x)
-        y_int = int(y)
-        multiply_result = x_int * y_int
-
-        # Create message
-        return_json = {
-            'Message': multiply_result,
-            'Status Code': 200
-        }
+            # Create response message
+            return_json = {
+                'Message': result,
+                'Status Code': status_code
+            }
         return jsonify(return_json)
 
 
@@ -118,28 +111,20 @@ class Divide(Resource):
                 "Message": "Missing one or more parameters.",
                 "Status Code": status_code
             }
-            return jsonify(return_json)
         elif status_code == 302:
             return_json = {
                 "Message": "Attempted to divide by zero.",
                 "Status Code": status_code
             }
-            return jsonify(return_json)
+        else:
+            # Valid status code received, continue
+            result = perform_operation(posted_data["x"], posted_data["y"], "divide")
 
-        # Valid status code received, continue
-        x = posted_data["x"]
-        y = posted_data["y"]
-
-        # Multiply POSTed data
-        x_int = int(x)
-        y_int = int(y)
-        divide_result = x_int / y_int
-
-        # Create message
-        return_json = {
-            'Message': divide_result,
-            'Status Code': 200
-        }
+            # Create message
+            return_json = {
+                'Message': result,
+                'Status Code': status_code
+            }
         return jsonify(return_json)
 
 
