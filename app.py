@@ -6,14 +6,10 @@ api = Api(app)
 
 
 def check_posted_data(posted_data, function_name):
-    if function_name == "add" or function_name == "subtract" or function_name == "multiply":
-        if "x" not in posted_data or "y" not in posted_data:
-            return 301  # Missing parameter
-    elif function_name == "divide":
-        if "x" not in posted_data or "y" not in posted_data:
-            return 301  # Missing parameter
-        elif posted_data["y"] == 0:
-            return 302  # Attempting to divide by 0
+    if "x" not in posted_data or "y" not in posted_data:
+        return 301  # Missing parameter
+    elif function_name == "divide" and int(posted_data["y"]) == 0:
+        return 302  # Attempting to divide by 0
     return 200
 
 
@@ -116,7 +112,7 @@ class Divide(Resource):
         posted_data = request.get_json()
 
         # Verify POSTed data's contents and format
-        status_code = check_posted_data(posted_data, "multiply")
+        status_code = check_posted_data(posted_data, "divide")
         if status_code == 301:
             return_json = {
                 "Message": "Missing one or more parameters.",
@@ -148,6 +144,9 @@ class Divide(Resource):
 
 
 api.add_resource(Add, "/add")
+api.add_resource(Subtract, "/subtract")
+api.add_resource(Multiply, "/multiply")
+api.add_resource(Divide, "/divide")
 
 
 @app.route('/')
