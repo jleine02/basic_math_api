@@ -4,8 +4,6 @@ from flask_restful import Api, Resource
 app = Flask(__name__)
 api = Api(app)
 
-status_codes = {200: "", 301: "Missing one or more parameters.", 302: "Attempted to divide by zero."}
-
 
 def check_posted_data(posted_data, function_name):
     if "x" not in posted_data or "y" not in posted_data:
