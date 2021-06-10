@@ -1,8 +1,26 @@
 from flask import Flask, jsonify, request
 from flask_restful import Api, Resource
 
+from pymongo import MongoClient
+
 app = Flask(__name__)
 api = Api(app)
+
+client = MongoClient("mongodb://db:27017")  # 27017 is default port mongodb works on
+db = client.new_db
+UserNum = db["UserNum"]
+
+UserNum.insert({
+    "num_of_users": 0
+})
+
+
+class Visit(Resource):
+    def get(self):
+        prev_num = UserNum.find({})[0]["num_of_users"]
+        new_num = prev_num + 1
+        UserNum.update({}, {"$set": {"num_of_users": new_num}})
+        return f"Hello user {new_num}"
 
 
 def check_posted_data(posted_data, function_name):
@@ -130,7 +148,7 @@ api.add_resource(Add, "/add")
 api.add_resource(Subtract, "/subtract")
 api.add_resource(Multiply, "/multiply")
 api.add_resource(Divide, "/divide")
-
+api.add_resource((Visit, "/hello"))
 
 @app.route('/')
 def hello_world():
