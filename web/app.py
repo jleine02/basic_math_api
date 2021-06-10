@@ -10,7 +10,7 @@ client = MongoClient("mongodb://db:27017")  # 27017 is default port mongodb work
 db = client.new_db
 UserNum = db["UserNum"]
 
-UserNum.insert({
+UserNum.insert_one({
     "num_of_users": 0
 })
 
@@ -148,7 +148,8 @@ api.add_resource(Add, "/add")
 api.add_resource(Subtract, "/subtract")
 api.add_resource(Multiply, "/multiply")
 api.add_resource(Divide, "/divide")
-api.add_resource((Visit, "/hello"))
+api.add_resource(Visit, "/hello")
+
 
 @app.route('/')
 def hello_world():
